@@ -1,0 +1,173 @@
+ private static final String DBNAME="sample_db";
+    private static int DB_VERSION=1;
+    private static final String TABLE_NAME="tbl_item";
+    private static final String COL_ITEMNAME="name";
+    private static final String COL_ITEMQTY="qty";
+
+
+//inside OnCreate
+        String query="CREATE TABLE "+TABLE_NAME+"("+COL_ITEMNAME+" TEXT PRIMARY KEY,"+COL_ITEMQTY+" INTEGER)";
+        db.execSQL(query);
+
+
+//inside onUpgrade
+  db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+
+
+//next
+
+public boolean createItems(String name,int qty)
+    {
+        SQLiteDatabase db=this.getReadableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(COL_ITEMNAME,name);
+        values.put(COL_ITEMQTY,qty);
+        long result=db.insert(TABLE_NAME,null,values);
+        return result!=-1;
+    }
+
+
+    public boolean updateItems(String name,int qty)
+    {
+        SQLiteDatabase db=this.getReadableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(COL_ITEMQTY,qty);
+        return db.update(TABLE_NAME,values,COL_ITEMNAME+"=?",new String[]{name})>0;
+    }
+  public Cursor readItems()
+  {
+      SQLiteDatabase db=this.getReadableDatabase();
+      return db.rawQuery("SELECT * FROM "+TABLE_NAME,null);
+  }
+
+  public boolean deleteItem(String name)
+  {
+      SQLiteDatabase db=this.getReadableDatabase();
+      return db.delete(TABLE_NAME,COL_ITEMNAME+"=?",new String[]{name})>0;
+
+  }
+
+
+//InsertActivity
+
+DbHandler dbHandler;
+    EditText name,qty;
+    Button btn;
+
+dbHandler=new DbHandler(this);
+        name=findViewById(R.id.edit1);
+        qty=findViewById(R.id.edit2);
+        btn=findViewById(R.id.btn_insert);
+        btn.setOnClickListener(v->{
+            String itemname=name.getText().toString();
+            String itemqty=qty.getText().toString();
+            if(itemname.isEmpty() || itemqty.isEmpty())
+            {
+                Toast.makeText(InsertActivity.this,"pleease fill",Toast.LENGTH_LONG).show();
+                return;
+            }
+            int int_itemqty=Integer.parseInt(itemqty);
+
+            if(dbHandler.createItems(itemname,int_itemqty))
+            {
+                Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(InsertActivity.this,"failed",Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+
+//ReadActivity
+
+    DbHandler dbHandler;
+    ListView listView;
+    ArrayList<HashMap<String,String>> arrayList;
+    SimpleAdapter adapter;
+
+   dbHandler=new DbHandler(this);
+arrayList=new ArrayList<>();
+listView=findViewById(R.id.listitems);
+itemLoad();
+    }
+    public void itemLoad()
+    {
+        Cursor cursor=dbHandler.readItems();
+if(cursor.moveToFirst())
+{
+    do{
+String item=cursor.getString(0);
+String qty=cursor.getString(1);
+HashMap<String,String>hashMap=new HashMap<>();
+hashMap.put("name",item);
+hashMap.put("quant",String.valueOf(qty));
+arrayList.add(hashMap);
+
+    }while(cursor.moveToNext());
+}
+adapter=new SimpleAdapter(
+this,
+        arrayList,
+        R.layout.list_items,
+new String[]{"name","quant"},
+new int[]{R.id.text_item,R.id.text_qty}
+);
+listView.setAdapter(adapter);
+    }
+
+
+//UpdateActivity
+    EditText edit1,edit2;
+    Button btn;
+    DbHandler dbHandler;
+
+  dbHandler =new DbHandler(this);
+        edit1=findViewById(R.id.up_text1);
+        edit2=findViewById(R.id.up_text2);
+        btn=findViewById(R.id.btn_update);
+        btn.setOnClickListener(v->{
+            String item=edit1.getText().toString();
+            String qty=edit2.getText().toString();
+            if(item.isEmpty() || qty.isEmpty())
+            {
+                Toast.makeText(UpdateActivity.this,"please fill",Toast.LENGTH_LONG).show();
+                return;
+            }
+            int int_qty=Integer.parseInt(qty);
+            if(dbHandler.updateItems(item,int_qty))
+            {
+                Toast.makeText(UpdateActivity.this,"success",Toast.LENGTH_LONG).show();
+            }
+            else
+            {
+                Toast.makeText(UpdateActivity.this,"failed",Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+//DeletActivity
+    EditText edit1;
+    Button btn;
+    DbHandler dbHandler;
+
+ edit1=findViewById(R.id.text_del);
+        btn=findViewById(R.id.btn_del);
+        dbHandler=new DbHandler(this);
+        btn.setOnClickListener(v->{
+            String item=edit1.getText().toString();
+            if(item.isEmpty())
+            {
+                Toast.makeText(DeleteActivity.this,"please fill",Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(dbHandler.deleteItem(item))
+            {
+                Toast.makeText(DeleteActivity.this,"sucess",Toast.LENGTH_LONG).show();
+            }
+            else
+            {
+                Toast.makeText(DeleteActivity.this,"failed",Toast.LENGTH_LONG).show();
+            }
+        });
