@@ -1,0 +1,48 @@
+ EditText edit1,edit2;
+ TextView tv;
+ Button btn1,btn2,btn3,btn4;
+
+        edit1=findViewById(R.id.num1);
+        edit2=findViewById(R.id.num2);
+        tv=findViewById(R.id.tv3);
+        btn1=findViewById(R.id.sum1);
+        btn2=findViewById(R.id.minus);
+        btn3=findViewById(R.id.multi);
+        btn4=findViewById(R.id.division);
+
+            btn1.setOnClickListener(v->{
+            String number1=edit1.getText().toString();
+            String number2=edit2.getText().toString();
+            int int_num1=Integer.parseInt(number1);
+            int int_num2=Integer.parseInt(number2);
+            int sum=int_num1+int_num2;
+            tv.setText("result is="+String.valueOf(sum));
+        });
+
+        btn2.setOnClickListener(v->{
+            String number1=edit1.getText().toString();
+            String number2=edit2.getText().toString();
+            int int_num1=Integer.parseInt(number1);
+            int int_num2=Integer.parseInt(number2);
+            int minus=int_num1-int_num2;
+            tv.setText("result is="+String.valueOf(minus));
+
+        });
+        btn3.setOnClickListener(v->{
+            String number1=edit1.getText().toString();
+            String number2=edit2.getText().toString();
+            int int_num1=Integer.parseInt(number1);
+            int int_num2=Integer.parseInt(number2);
+            int multiplication=int_num1*int_num2;
+            tv.setText("result is="+String.valueOf(multiplication));
+
+        });
+        btn4.setOnClickListener(v->{
+            String number1=edit1.getText().toString();
+            String number2=edit2.getText().toString();
+            int int_num1=Integer.parseInt(number1);
+            int int_num2=Integer.parseInt(number2);
+            double division=int_num1/int_num2;
+            tv.setText("result is="+String.valueOf(division));
+
+        });

@@ -1,0 +1,34 @@
+ ConstraintLayout constraintLayout;
+ TextView textview;
+
+
+ //inside the onCreate method after });
+        constraintLayout=findViewById(R.id.main);
+        textview=findViewById(R.id.tv);
+        registerForContextMenu(textview);
+
+
+
+
+//outside the } of onCreate method
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo)
+    {
+            super.onCreateContextMenu(menu,v,menuInfo);
+            menu.add(0,v.getId(),0,"Green");
+            menu.add(0,v.getId(),0,"Red");
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NotNull MenuItem item)
+    {
+        if(item.getTitle()=="Green"){
+            constraintLayout.setBackgroundColor(Color.GREEN);
+        }
+        if(item.getTitle()=="Red")
+        {
+            constraintLayout.setBackgroundColor(Color.RED);
+        }
+        return true;
+    }

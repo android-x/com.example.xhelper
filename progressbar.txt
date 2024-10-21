@@ -1,0 +1,31 @@
+  Button btn;
+    ProgressBar bar;
+    TextView text;
+    Handler handler;
+    int progress_bar=0;
+
+handler=new Handler();
+        btn=findViewById(R.id.btn1);
+        bar=findViewById(R.id.progress);
+        text=findViewById(R.id.tv);
+        btn.setOnClickListener(v->{
+            progress_bar = 0;
+            bar.setProgress(0);
+            text.setText("0%");
+            new Thread(()->{
+                while(progress_bar<100)
+                {
+                    progress_bar+=1;
+                    handler.post(()->{bar.setProgress(progress_bar);
+                        text.setText(progress_bar + "%");
+
+                    });
+                    try{
+                        Thread.sleep(50);
+                    }catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+
+            }).start();
+        });
