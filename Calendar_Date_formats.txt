@@ -1,0 +1,32 @@
+ Calendar calendar; //
+ SimpleDateFormat simpleDateFormat;//
+ TextView t1,t2,t3,t4,t5;
+ String dateTime;
+
+
+
+        t1=findViewById(R.id.tv1);
+        t2=findViewById(R.id.tv2);
+        t3=findViewById(R.id.tv3);
+        t4=findViewById(R.id.tv4);
+
+
+        calendar=Calendar.getInstance();
+        simpleDateFormat=new SimpleDateFormat("dd.MM.yyyy HH:mm:ss aaa z");
+        dateTime=simpleDateFormat.format(calendar.getTime()).toString();
+        t1.setText(dateTime);
+
+        calendar=Calendar.getInstance();
+        simpleDateFormat=new SimpleDateFormat("dd/MM/yyyy HH-mm-ss aaa z");
+        dateTime=simpleDateFormat.format(calendar.getTime()).toString();
+        t2.setText(dateTime);
+
+        calendar=Calendar.getInstance();
+        simpleDateFormat= new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aaa z");
+        dateTime=simpleDateFormat.format(calendar.getTime()).toString();
+        t3.setText(dateTime);
+
+        calendar=Calendar.getInstance();
+        simpleDateFormat =new SimpleDateFormat("dd.LLL.yyyy HH:mm:ss aaa z");
+        dateTime=simpleDateFormat.format(calendar.getTime()).toString();
+        t4.setText(dateTime);
