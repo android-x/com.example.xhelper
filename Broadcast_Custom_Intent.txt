@@ -1,0 +1,40 @@
+    private MyReceiver receiver;
+    Button btn;
+
+//inside onCreate
+
+      btn = findViewById(R.id.btn);
+
+        // Set up the button to send a custom broadcast
+        btn.setOnClickListener(v -> {
+            Intent i = new Intent();
+            i.setAction("com.example.custom_broadcast_intent").setPackage(getPackageName());
+            sendBroadcast(i);
+        });
+
+        // Register the receiver
+        conReceiver();
+
+ private void conReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.example.custom_broadcast_intent");
+        receiver = new MyReceiver();
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregister the receiver to avoid memory leaks
+        unregisterReceiver(receiver);
+    }
+
+
+//also create "right click in com folder->new->other->Broadcast
+MyReciever
+-------------
+//inside onRecive
+ if (intent.getAction() != null && intent.getAction().equals("com.example.custom_broadcast_intent")) {
+            // Show a Toast when the broadcast is received
+            Toast.makeText(context, "Received custom broadcast!", Toast.LENGTH_SHORT).show();
+        }
