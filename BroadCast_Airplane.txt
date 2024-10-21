@@ -1,0 +1,34 @@
+  private MyReceiver receiver;
+
+
+//iniside onCreate
+ configureReceiver();
+
+ private void configureReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        receiver = new MyReceiver();
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregister the receiver when the activity is destroyed
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
+    }
+
+
+MyReceiver.java
+-----------
+//inside onRecieve
+  if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(intent.getAction())) {
+            boolean isAirplaneModeOn = intent.getBooleanExtra("state", false);
+            // Show a toast message indicating the state of airplane mode
+            if (isAirplaneModeOn) {
+                Toast.makeText(context, "Airplane mode is ON", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Airplane mode is OFF", Toast.LENGTH_SHORT).show();
+            }
