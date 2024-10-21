@@ -1,0 +1,24 @@
+  Button btn;
+
+
+btn=findViewById(R.id.btn);
+        btn.setOnClickListener(v->{
+            AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Alert");
+            builder.setMessage("Do you want to Continue");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(MainActivity.this,"u clicked yes",Toast.LENGTH_LONG).show();
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(MainActivity.this,"u clicked No",Toast.LENGTH_LONG).show();
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        });
+
