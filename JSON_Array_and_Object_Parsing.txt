@@ -1,0 +1,100 @@
+MainActivity.java
+package com.example.jsondemo;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class MainActivity extends AppCompatActivity {
+
+    TextView text1, text2;
+    // JSON object
+    public static final String JSON_STRING = "{\"employee\":{\"name\":\"varghese\",\"salary\":34000}}";
+
+    // JSON array
+    public static final String JSON_ARRAY = "{\"Employee\":[{\"name\":\"baby\",\"salary\":34000},{\"name\":\"kuku\",\"salary\":30000}]}";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        text1 = findViewById(R.id.tv1);
+        text2 = findViewById(R.id.tv2);
+
+        try {
+            // Parse single employee JSON
+            JSONObject jsonObject = (new JSONObject(JSON_STRING)).getJSONObject("employee");
+            String name = jsonObject.getString("name");
+            int salary = jsonObject.getInt("salary");
+            String str = "Name: " + name + "\nSalary: " + salary;
+            text1.setText(str);
+
+            // Parsing JSON array
+            JSONObject jsonArrayObject = new JSONObject(JSON_ARRAY);
+            JSONArray employeeArray = jsonArrayObject.getJSONArray("Employee");
+
+            StringBuilder arrayStr = new StringBuilder();
+            for (int i = 0; i < employeeArray.length(); i++) {
+                JSONObject employee = employeeArray.getJSONObject(i);
+                String empName = employee.getString("name");
+                int empSalary = employee.getInt("salary");
+                arrayStr.append("Name: ").append(empName).append(", Salary: ").append(empSalary).append("\n");
+            }
+            text2.setText(arrayStr.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="388dp"
+        android:layout_height="179dp"
+        android:hint="json here"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.198" />
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="436dp"
+        android:layout_height="223dp"
+        android:hint="jason here"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.654" />
+</androidx.constraintlayout.widget.ConstraintLayout>
