@@ -1,0 +1,84 @@
+import android.os.AsyncTask;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView textView;
+    private ProgressBar progressBar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+        progressBar = findViewById(R.id.progressBar);
+
+        // Start the AsyncTask
+        new SimpleAsyncTask().execute();
+    }
+
+    // Define the AsyncTask
+    private class SimpleAsyncTask extends AsyncTask<Void, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            // UI setup before the task starts (runs on the main thread)
+            textView.setText("Starting task...");
+            progressBar.setProgress(0);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // Background operation (runs on a worker thread)
+            for (int i = 1; i <= 10; i++) {
+                try {
+                    Thread.sleep(500); // Simulate some background work
+                    publishProgress(i * 10); // Update progress
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "Task Completed!";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            // Update the UI with progress (runs on the main thread)
+            progressBar.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // UI update after background task is completed (runs on the main thread)
+            textView.setText(result);
+        }
+    }
+}
+
+
+
+activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AsyncTask Demo"
+        android:textSize="20sp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+
+</LinearLayout>
