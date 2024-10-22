@@ -1,0 +1,150 @@
+
+MainActivity.java
+
+//import statement
+import android.view.View;
+import android.widget.Toast;
+import android.widget.GridView;
+import android.widget.AdapterView;
+
+
+    //before onCreate
+    GridView gv;
+    String[] items={"Search","Settings","Message","Mail"};
+    int[] itemsId={R.drawable.search,R.drawable.settings,R.drawable.message,R.drawable.mail};
+
+
+//inside onCreate
+        gv=findViewById(R.id.gd);
+        CustomAdapter customAdapter=new CustomAdapter(MainActivity.this,items,itemsId);
+        gv.setAdapter(customAdapter);
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String text= items[i];
+                Toast.makeText(MainActivity.this,"Selected: "+text,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+CustomAdapter.java
+----------------------
+package com.example.a25_custom_gridview;
+//import statement
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+import android.widget.ImageView;
+import android.content.Context;
+import android.view.LayoutInflater;
+
+public class CustomAdapter extends BaseAdapter {
+    private Context context;
+    private final String[] items;
+    private final int[] imgId;
+
+    public CustomAdapter(Context context,String[] items, int[] imgId) {
+        this.context=context;
+        this.items = items;
+        this.imgId = imgId;
+    }
+
+    @Override
+    public int getCount() {
+        return items.length;
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return items[i];
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        View gvi;
+        if (view==null)
+        {
+            LayoutInflater inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            gvi=inflater.inflate(R.layout.item_list,viewGroup,false);
+        }
+        else
+        {
+            gvi=view;
+        }
+        TextView textView=gvi.findViewById(R.id.textView2);
+        ImageView imageView=gvi.findViewById(R.id.imageView);
+        textView.setText(items[i]);
+        imageView.setImageResource(imgId[i]);
+        return gvi;
+    }
+}
+
+activity_main.xml
+--------------------
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="112dp"
+        android:layout_marginBottom="683dp"
+        android:text="Custom GridView"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <GridView
+        android:id="@+id/gd"
+        android:layout_width="413dp"
+        android:layout_height="670dp"
+        android:layout_marginTop="61dp"
+        android:numColumns="auto_fit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+item_list.xml
+----------------------
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:srcCompat="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView" />
+</LinearLayout>
