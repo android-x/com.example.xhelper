@@ -1,0 +1,263 @@
+MainActivity.java
+
+
+//import statement
+import android.widget.EditText;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.TextView;
+
+
+ //before onCreate
+ private EditText name,course,sem;
+ private DBHelper dbHelper;
+ private TextView textView;
+
+//inside onCreate
+ name=findViewById(R.id.et1);
+ course=findViewById(R.id.et2);
+ sem=findViewById(R.id.et3);
+ textView=findViewById(R.id.textView);
+ dbHelper=new DBHelper(MainActivity.this);
+
+//outside onCreate
+ public void addStudent(View view)
+ {
+ String studentName=name.getText().toString();
+ String studentCourse=course.getText().toString();
+ int studentSem=Integer.parseInt(sem.getText().toString());
+ dbHelper.addStudent(studentName,studentCourse,studentSem);
+ if (studentName.equals("")||studentCourse.equals("")||sem.equals(""))
+ {
+ Toast.makeText(MainActivity.this,"All Fields should be
+filled",Toast.LENGTH_SHORT).show();
+ return;
+
+
+}
+ ContentValues values=new ContentValues();
+ values.put("name",studentName);
+ values.put("course",studentCourse);
+ values.put("sem",studentSem);
+ getContentResolver().insert(MyContentProvider.CONTENT_URI,values);
+ Toast.makeText(MainActivity.this,"Student added",Toast.LENGTH_SHORT).show();
+ name.setText("");
+ course.setText("");
+ sem.setText("");
+ }
+ public void findStudent(View view)
+ {
+ Cursor
+cursor=getContentResolver().query(MyContentProvider.CONTENT_URI,null,null,null,null);
+ if (cursor.moveToFirst())
+ {
+ StringBuilder stringBuilder=new StringBuilder();
+ while (!cursor.isAfterLast())
+ {
+ int id=Integer.parseInt(cursor.getString(0));
+ String name=cursor.getString(1);
+ String course=cursor.getString(2);
+ int sem=Integer.parseInt(cursor.getString(3));
+ stringBuilder.append("ID: ").append(id);
+ stringBuilder.append("Name: ").append(name);
+ stringBuilder.append("Course: ").append(course);
+ stringBuilder.append("Semester: ").append(sem).append("\n");
+ cursor.moveToNext();
+ }
+ textView.setText(stringBuilder);
+ }
+ else
+
+ {
+ textView.setText("No Students Found...");
+ }
+ }
+ public void updateStudent(View view)
+ {
+ String studentName= name.getText().toString();
+ String studentCourse=course.getText().toString();
+ int studentSem=Integer.parseInt(sem.getText().toString());
+ dbHelper.updateStudent(studentName,studentCourse,studentSem);
+ Toast.makeText(MainActivity.this,"Student updated",Toast.LENGTH_SHORT).show();
+ name.setText("");
+ course.setText("");
+ sem.setText("");
+ }
+ public void deleteStudent(View view)
+ {
+ String studentName=name.getText().toString();
+ Boolean result=dbHelper.deleteStudent(studentName);
+ if (result)
+ {
+ Toast.makeText(MainActivity.this,"Student Deleted!",Toast.LENGTH_SHORT).show();
+ name.setText("");
+ course.setText("");
+ sem.setText("");
+ }
+ }
+
+
+MyContentProvider.java
+
+
+//import statement
+import android.content.ContentUris;
+import android.content.UriMatcher;
+
+import android.database.sqlite.SQLiteDatabase;
+public class MyContentProvider extends ContentProvider {
+ static final String AUTHORITY="com.example.database.provider";
+ public static final Uri
+CONTENT_URI=Uri.parse("content://"+AUTHORITY+"/"+DBHelper.STUDENT_TABLE);
+ private static final int STUDENTS=1;
+ private static final int STUDENT_ID=2;
+ private static final UriMatcher uriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
+ static {
+ uriMatcher.addURI(AUTHORITY,DBHelper.STUDENT_TABLE,STUDENTS);
+ uriMatcher.addURI(AUTHORITY,DBHelper.STUDENT_TABLE+"/#",STUDENT_ID);
+ }
+ private DBHelper dbHelper;
+ public MyContentProvider() {
+ }
+ @Override
+ public int delete(Uri uri, String selection, String[] selectionArgs) {
+ SQLiteDatabase db=dbHelper.getWritableDatabase();
+ int rowsDeleted=db.delete(DBHelper.STUDENT_TABLE,selection,selectionArgs);
+ getContext().getContentResolver().notifyChange(uri,null);
+ return rowsDeleted;
+ }
+ @Override
+ public String getType(Uri uri) {
+ int match=uriMatcher.match(uri);
+ switch (match)
+ {
+ case STUDENTS:
+ return "vnd.android.cursor.dir/"+AUTHORITY+"."+DBHelper.STUDENT_TABLE;
+ case STUDENT_ID:
+ return "vnd.android.cursor.item/"+AUTHORITY+"."+DBHelper.STUDENT_TABLE;
+
+default:
+ throw new IllegalArgumentException("Unknown uri: "+uri);
+ }
+ }
+ @Override
+ public Uri insert(Uri uri, ContentValues values) {
+ SQLiteDatabase db=dbHelper.getWritableDatabase();
+ long id=db.insert(DBHelper.STUDENT_TABLE,null,values);
+ Uri newUri= ContentUris.withAppendedId(CONTENT_URI,id);
+ getContext().getContentResolver().notifyChange(newUri,null);
+ return newUri;
+ }
+ @Override
+ public boolean onCreate() {
+ dbHelper=new DBHelper(getContext());
+ return true;
+ }
+ @Override
+ public Cursor query(Uri uri, String[] projection, String selection,
+ String[] selectionArgs, String sortOrder) {
+ SQLiteDatabase db=dbHelper.getReadableDatabase();
+ Cursor cursor;
+ int match=uriMatcher.match(uri);
+ switch (match)
+ {
+ case STUDENTS:
+
+cursor=db.query(DBHelper.STUDENT_TABLE,projection,selection,selectionArgs,null,null,sortOrder
+);
+ break;
+ case STUDENT_ID:
+ selection=DBHelper.COLUMN_ID+"=?";
+
+selectionArgs=new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+cursor=db.query(DBHelper.STUDENT_TABLE,projection,selection,selectionArgs,null,null,sortOrder
+);
+ break;
+ default:
+ throw new IllegalArgumentException("Unknown URI: "+uri);
+ }
+ cursor.setNotificationUri(getContext().getContentResolver(),uri);
+ return cursor;
+ }
+ @Override
+ public int update(Uri uri, ContentValues values, String selection,
+ String[] selectionArgs) {
+ SQLiteDatabase db= dbHelper.getWritableDatabase();
+ int rowsUpdated=db.update(DBHelper.STUDENT_TABLE,values,selection,selectionArgs);
+ getContext().getContentResolver().notifyChange(uri,null);
+ return rowsUpdated;
+ }
+}
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:app="http://schemas.android.com/apk/res-auto"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:id="@+id/main"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:orientation="vertical"
+ tools:context=".MainActivity" >
+ <EditText
+ android:id="@+id/et1"
+
+android:layout_width="match_parent"
+ android:layout_height="84dp"
+ android:ems="10"
+ android:inputType="text"
+ android:text="Name" />
+ <EditText
+ android:id="@+id/et2"
+ android:layout_width="match_parent"
+ android:layout_height="95dp"
+ android:ems="10"
+ android:inputType="text"
+ android:text="Name" />
+ <EditText
+ android:id="@+id/et3"
+ android:layout_width="match_parent"
+ android:layout_height="86dp"
+ android:ems="10"
+ android:inputType="text"
+ android:text="Name" />
+ <Button
+ android:id="@+id/button"
+ android:layout_width="match_parent"
+ android:layout_height="79dp"
+ android:onClick="addStudent"
+ android:text="Add Student"
+ android:textSize="24sp" />
+ <Button
+ android:id="@+id/button2"
+ android:layout_width="match_parent"
+ android:layout_height="74dp"
+ android:onClick="updateStudent"
+
+android:text="Update Student"
+ android:textSize="24sp" />
+ <Button
+ android:id="@+id/button3"
+ android:layout_width="match_parent"
+ android:layout_height="84dp"
+ android:onClick="deleteStudent"
+ android:text="Delete Student"
+ android:textSize="24sp" />
+ <Button
+ android:id="@+id/button4"
+ android:layout_width="match_parent"
+ android:layout_height="86dp"
+ android:onClick="findStudent"
+ android:text="Find Student"
+ android:textSize="24sp" />
+ <TextView
+ android:id="@+id/textView"
+ android:layout_width="match_parent"
+ android:layout_height="122dp"
+ android:text="TextView"
+ android:textSize="20sp" />
+</LinearLayout>
+
+
+
+
