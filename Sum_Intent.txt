@@ -1,0 +1,34 @@
+MainAtivity.java
+----------------
+    EditText ed1,ed2;
+    Button btn;
+
+        ed1=findViewById(R.id.edit_num1);
+        ed2=findViewById(R.id.edit_num2);
+        btn=findViewById(R.id.btn_show);
+        btn.setOnClickListener(v->{
+            String n1=ed1.getText().toString();
+            String n2=ed2.getText().toString();
+            int num1=Integer.parseInt(n1);
+            int num2=Integer.parseInt(n2);
+          Intent intent=new Intent(MainActivity.this,ResultActivity.class);
+          intent.putExtra("a",num1);
+          intent.putExtra("b",num2);
+          startActivity(intent);
+        });
+
+
+ResultActivity.java
+--------------
+ TextView tvSum,tvAvg;
+ tvSum=findViewById(R.id.tv3);
+        tvAvg=findViewById(R.id.tv4);
+
+        //getting intent data
+        int num1=getIntent().getIntExtra("a",0);
+        int num2=getIntent().getIntExtra("b",1);
+
+        int sum=num1+num2;
+        double avg=sum/2.0;
+        tvSum.setText(String.valueOf(sum));
+        tvAvg.setText(String.valueOf(avg));
